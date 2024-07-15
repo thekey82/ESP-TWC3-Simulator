@@ -7,7 +7,6 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include <shelly_ip.h>
-//#include <WiFiManager.h>
 #include "TFT_eSPI.h"
 
 
@@ -15,11 +14,10 @@ unsigned colour = 0xFFFF;
 TFT_eSPI tft = TFT_eSPI();
 
 
-const char* ssid = "WlanDundA";
-const char* password = "88564715531805827929";
+const char* ssid = "SSID";
+const char* password = "PWD";
 
-//String server = "http://192.168.178.59/rpc/Shelly.GetStatus";
-//String serverapi = "http://192.168.178.48/api/1/vitals";
+
 String server = server_host;
 #define builtIn_Led 2
 #define PIN_POWER_ON 15  // LCD and battery Power Enable
@@ -47,8 +45,6 @@ long myTimeout = 1000;
 
 
 DynamicJsonDocument doc(1024);
-//StaticJsonDocument<1024> jsonDocument;
-//char buffer[1024];
 
 
 void handleRoot() {
@@ -190,8 +186,6 @@ void setup() {
 }
 
 
-
-
 void sendData(){
     StaticJsonDocument<300> obj;  
     obj["contactor_closed"] = charging;
@@ -251,11 +245,6 @@ void loop(void) {
   sendData();
   twcserver.handleClient();
   twcserver.on("/api/1/vitals",HTTP_GET, sendData);
- // Serial.print("session_energy_wh: ");Serial.println(session_energy_wh);
- // Serial.print("session_energy_wh_neu: ");Serial.println(session_energy_wh_neu);
-//  Serial.print("charging: ");Serial.println(charging);
- // Serial.print("start_charging: ");Serial.println(start_charging);
-  
   
   if (current <= 2) {
    charging = false;
