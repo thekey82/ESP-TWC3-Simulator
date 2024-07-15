@@ -1,0 +1,1 @@
+String server_host = "http://192.168.178.59/rpc/Shelly.GetStatus";
