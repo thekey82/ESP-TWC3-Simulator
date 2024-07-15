@@ -1,1 +1,1 @@
-String server_host = "http://192.168.178.59/rpc/Shelly.GetStatus";
+String server_host = "http://SHELLY_IP/rpc/Shelly.GetStatus";
