@@ -138,7 +138,18 @@ void setup_wifi(){
     Serial.print(".");
     c=c+1;
     if(c>10){
-        ESP.restart(); //restart ESP after 10 seconds if not connected to wifi
+        //ESP.restart(); //restart ESP after 10 seconds if not connected to wifi
+      Serial.print("no Wifi");
+        tft.setTextSize(1);
+        tft.setCursor(5,120);
+        tft.setTextColor(TFT_RED, TFT_DARKGREY);
+        tft.println("no Wifi");
+    }
+    else {
+        tft.setTextSize(1);
+        tft.setCursor(5,120);
+        tft.setTextColor(TFT_DARKGREY, TFT_DARKGREY);
+        tft.println("no Wifi");
     }
   }
 
@@ -256,6 +267,9 @@ void loop(void) {
   }
   else {
    charging = true;   
+    if (session_energy_wh_neu <= 0.1) {
+    session_energy_wh_neu = total;
+   }
    session_energy_wh = (total - session_energy_wh_neu);
    
   }
