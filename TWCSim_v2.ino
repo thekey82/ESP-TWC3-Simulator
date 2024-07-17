@@ -38,11 +38,10 @@ byte start_charging = 0;
 float session_energy_wh_neu = 0.001;
 float session_energy_wh = 0.000;
 float leistung = 0;
+byte clear_tft = 0;
 
 long myTimer = 0;
 long myTimeout = 1000;
-
-
 
 DynamicJsonDocument doc(1024);
 
@@ -139,7 +138,7 @@ void setup_wifi(){
     c=c+1;
     if(c>10){
         //ESP.restart(); //restart ESP after 10 seconds if not connected to wifi
-      Serial.print("no Wifi");
+        Serial.print("no Wifi");
         tft.setTextSize(1);
         tft.setCursor(5,120);
         tft.setTextColor(TFT_RED, TFT_DARKGREY);
@@ -189,12 +188,11 @@ void setup() {
   tft.setRotation(3);
   tft.setSwapBytes(true);
   tft.fillScreen(TFT_DARKGREY);  //horiz / vert<> position/dimension
-  tft.setTextSize(2);
-  tft.setCursor(65,10);
-  tft.setTextColor(TFT_BLACK);
-  tft.println("TWC3 Simulator");
+  
   
 }
+
+
 
 
 void sendData(){
@@ -256,6 +254,11 @@ void loop(void) {
   sendData();
   twcserver.handleClient();
   twcserver.on("/api/1/vitals",HTTP_GET, sendData);
+ // Serial.print("session_energy_wh: ");Serial.println(session_energy_wh);
+ // Serial.print("session_energy_wh_neu: ");Serial.println(session_energy_wh_neu);
+//  Serial.print("charging: ");Serial.println(charging);
+ // Serial.print("start_charging: ");Serial.println(start_charging);
+  
   
   if (current <= 2) {
    charging = false;
@@ -264,10 +267,17 @@ void loop(void) {
      session_energy_wh_neu = total;
      start_charging = 1;
    }
+    if ((clear_tft == 0) && (leistung >= 100)){
+      delay(500);
+      leistung = 9;
+      tft.fillScreen(TFT_DARKGREY);  //horiz / vert<> position/dimension
+      clear_tft = 1;
+    } 
   }
   else {
-   charging = true;   
-    if (session_energy_wh_neu <= 0.1) {
+   charging = true;  
+   clear_tft = 0; 
+   if (session_energy_wh_neu <= 0.1) {
     session_energy_wh_neu = total;
    }
    session_energy_wh = (total - session_energy_wh_neu);
@@ -284,6 +294,10 @@ void loop(void) {
   else {
    connected = false; 
   }
+  tft.setTextSize(2);
+  tft.setCursor(65,10);
+  tft.setTextColor(TFT_BLACK);
+  tft.println("TWC3 Simulator");
   tft.setTextSize(2);
   tft.setCursor(5,30);
   tft.setTextColor(TFT_BLACK, TFT_DARKGREY);
@@ -307,7 +321,7 @@ void loop(void) {
   tft.setCursor(50,60);
   tft.setTextColor(TFT_BLACK, TFT_DARKGREY);
   tft.println(voltage,1);
-  tft.setCursor(90,60);
+  tft.setCursor(82,60);
   tft.println("V");
   tft.setTextSize(1);
   tft.setCursor(100,60);
@@ -320,13 +334,15 @@ void loop(void) {
   tft.println("A");
   tft.setCursor(200,60);
   tft.println("Leisung:");
-  tft.setCursor(270,60);
+  tft.setCursor(250,60);
   tft.println(leistung ,0);
+  tft.setCursor(280,60);
+  tft.println("W");
   tft.setTextSize(1);
   tft.setCursor(5,80);
   tft.setTextColor(TFT_BLACK, TFT_DARKGREY);
   tft.println("Total: ");
-  tft.setCursor(50,80);
+  tft.setCursor(45,80);
   tft.setTextColor(TFT_BLACK, TFT_DARKGREY);
   tft.println(total);
   tft.setTextSize(1);
@@ -336,4 +352,9 @@ void loop(void) {
   tft.setCursor(150,80);
   tft.setTextColor(TFT_BLACK, TFT_DARKGREY);
   tft.println(session_energy_wh,0);
+  tft.setCursor(180,80);
+  tft.println("Wh");
+  
+  Serial.print(clear_tft);
+  //tft.fillScreen(TFT_DARKGREY);
 }
